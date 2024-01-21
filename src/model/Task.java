@@ -6,14 +6,15 @@ public class Task {
     private int id;
     private Status status;
 
-    public Task(){
+    public Task() {
     }
 
-    public Task(String name,String description, Status status){
-        this.name=name;
-        this.description=description;
-        this.status=status;
+    public Task(String name, String description, Status status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
     }
+
     public String getName() {
         return name;
     }
@@ -47,12 +48,13 @@ public class Task {
     }
 
     @Override
-    public String toString(){
-        return "Task{"+
-                "id="+id+
-                ", name='"+name+'\''+
-                ",description='"+description+'\''+
-                '}';
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ",description='" + description + '\'' +
+                ",status='" + status + '\'' +
+                "}\n";
     }
 }
 
