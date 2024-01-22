@@ -23,10 +23,6 @@ public class TaskManager {
         id = 0;
     }
 
-    public int generationId() {
-        return ++id;
-    }
-
     public Task createTask(Task task) {
         task.setId(generationId());
         tasks.put(task.getId(), task);
@@ -34,7 +30,7 @@ public class TaskManager {
     }
 
     public void createSubTask(SubTask subTask) {
-        Epic tempEpic = getForIdEpic(subTask.getIdEpic());
+        Epic tempEpic = getEpicByld(subTask.getEpicId());
         if (tempEpic == null) {
             return;
         }
@@ -50,19 +46,19 @@ public class TaskManager {
         epics.put(epic.getId(), epic);
     }
 
-    public Task getForIdTask(int id) {
+    public Task getTaskByld(int id) {
         return tasks.get(id);
     }
 
-    public Epic getForIdEpic(int id) {
+    public Epic getEpicByld(int id) {
         return epics.get(id);
     }
 
-    public SubTask getForIdSubTask(int id) {
+    public SubTask getSubTaskByld(int id) {
         return subTasks.get(id);
     }
 
-    public ArrayList<Task> getAllTask() {
+    public ArrayList<Task> getAllTasks() {
         ArrayList<Task> taskList = new ArrayList<>();
 
         for (Task task : tasks.values()) {
@@ -71,7 +67,7 @@ public class TaskManager {
         return taskList;
     }
 
-    public ArrayList<SubTask> getAllSubTask() {
+    public ArrayList<SubTask> getAllSubTasks() {
         ArrayList<SubTask> subTaskList = new ArrayList<>();
 
         for (SubTask subTask : subTasks.values()) {
@@ -80,7 +76,7 @@ public class TaskManager {
         return subTaskList;
     }
 
-    public ArrayList<Epic> getAllEpic() {
+    public ArrayList<Epic> getAllEpics() {
         ArrayList<Epic> epicList = new ArrayList<>();
 
         for (Epic epic : epics.values()) {
@@ -114,7 +110,7 @@ public class TaskManager {
         SubTask tempSubTask = subTasks.get(subTask.getId());
         if (tempSubTask != null) {
             subTasks.put(subTask.getId(), subTask);
-            updateEpicStatus(subTask.getIdEpic());
+            updateEpicStatus(subTask.getEpicId());
         } else {
             System.out.println("Tакого SubTask не существует!");
         }
@@ -136,7 +132,7 @@ public class TaskManager {
     public void removeForIdEpic(Integer id) {
         Epic tempEpic = epics.get(id);
         if (tempEpic == null) return;
-        for (Integer subTaskId : tempEpic.getListIdSubTasks()) {
+        for (Integer subTaskId : tempEpic.getSubTaskIds()) {
             subTasks.remove(subTaskId);
         }
         epics.remove(id);
@@ -144,7 +140,7 @@ public class TaskManager {
 
     public void removeForIdSubTask(Integer id) {
         SubTask tempSubTask = subTasks.get(id);
-        Epic tempEpic = epics.get(tempSubTask.getIdEpic());
+        Epic tempEpic = epics.get(tempSubTask.getEpicId());
 
         tempEpic.removeSubTaskId(id);
         subTasks.remove(id);
@@ -157,11 +153,15 @@ public class TaskManager {
         Epic tempEpic = epics.get(id);
         if (tempEpic == null) return null;
 
-        for (Integer tempId : tempEpic.getListIdSubTasks()) {
+        for (Integer tempId : tempEpic.getSubTaskIds()) {
             subTaskList.add(subTasks.get(tempId));
         }
 
         return subTaskList;
+    }
+
+    private int generationId() {
+        return ++id;
     }
 
     private void updateEpicStatus(Integer epicId) {
@@ -170,11 +170,11 @@ public class TaskManager {
         int statusDone = 0;
 
         if (tempEpic == null) return;
-        if (tempEpic.getListIdSubTasks() == null) {
+        if (tempEpic.getSubTaskIds() == null) {
             tempEpic.setStatus(Status.NEW);
         }
         SubTask tempSubTask;
-        for (Integer tempId : tempEpic.getListIdSubTasks()) {
+        for (Integer tempId : tempEpic.getSubTaskIds()) {
             tempSubTask = subTasks.get(tempId);
 
             if (tempSubTask.getStatus() == Status.NEW) {
@@ -184,9 +184,9 @@ public class TaskManager {
                 statusDone++;
             }
         }
-        if (tempEpic.getListIdSubTasks().size() == statusNew) {
+        if (tempEpic.getSubTaskIds().size() == statusNew) {
             tempEpic.setStatus(Status.NEW);
-        } else if (tempEpic.getListIdSubTasks().size() == statusDone) {
+        } else if (tempEpic.getSubTaskIds().size() == statusDone) {
             tempEpic.setStatus(Status.DONE);
         } else {
             tempEpic.setStatus(Status.IN_PROGRESS);

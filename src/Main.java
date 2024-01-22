@@ -29,9 +29,10 @@ public class Main {
         taskManager.createEpic(secondEpic);
         taskManager.createSubTask(firstSubTaskForSecondEpic);
 
-        System.out.println(taskManager.getAllTask());
-        System.out.println(taskManager.getAllEpic());
-        System.out.println(taskManager.getAllSubTask());
+        System.out.println("Созданы задачи");
+        System.out.println(taskManager.getAllTasks());
+        System.out.println(taskManager.getAllEpics());
+        System.out.println(taskManager.getAllSubTasks());
 
         firstTask.setStatus(Status.DONE);
         secondTask.setStatus(Status.DONE);
@@ -45,15 +46,17 @@ public class Main {
         taskManager.updateSubTask(secondSubTaskForFristEpic);
         taskManager.updateSubTask(firstSubTaskForSecondEpic);
 
-        System.out.println(taskManager.getAllTask());
-        System.out.println(taskManager.getAllEpic());
-        System.out.println(taskManager.getAllSubTask());
+        System.out.println("Изменен статус задач и пересчет епиков");
+        System.out.println(taskManager.getAllTasks());
+        System.out.println(taskManager.getAllEpics());
+        System.out.println(taskManager.getAllSubTasks());
 
         taskManager.removeForIdTask(1);
         taskManager.removeForIdEpic(3);
 
-        System.out.println(taskManager.getAllTask());
-        System.out.println(taskManager.getAllEpic());
-        System.out.println(taskManager.getAllSubTask());
+        System.out.println("Вывод после удаления 1 таска и 1 епика");
+        System.out.println(taskManager.getAllTasks());
+        System.out.println(taskManager.getAllEpics());
+        System.out.println(taskManager.getAllSubTasks());
     }
 }
