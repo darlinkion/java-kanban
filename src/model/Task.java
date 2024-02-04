@@ -48,6 +48,18 @@ public class Task {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Task task)) return false;
+        return id == task.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
     public String toString() {
         return "Task{" +
                 "id=" + id +
