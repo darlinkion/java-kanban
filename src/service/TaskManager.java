@@ -7,17 +7,19 @@ import model.Task;
 import java.util.List;
 
 public interface TaskManager {
-    Task createTask(Task task);
+    int createTask(Task task);
 
-    void createSubTask(SubTask subTask);
+    int createSubTask(SubTask subTask);
 
-    void createEpic(Epic epic);
+    int createEpic(Epic epic);
 
     Task getTaskByld(int id);
 
     Epic getEpicByld(int id);
 
     SubTask getSubTaskByld(int id);
+
+    List<Task> getHistory();
 
     List<Task> getAllTasks();
 

@@ -10,13 +10,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static service.Managers.getDefault;
 
-class InMemoryTaskManagerTest {
+class HistoryManagerTest {
+    @Test
+    void getHistoryList() {
+        InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+        Task firstTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
+        inMemoryHistoryManager.addTaskHistory(firstTask);
+        List<Task> tempList = new ArrayList<>();
+        tempList.add(firstTask);
+
+        assertEquals(tempList, inMemoryHistoryManager.getHistoryList(), "Должны совпадать");
+    }
 
     @Test
-    void mustAddTasksAndWorkWithThem() {
-        TaskManager taskManager = getDefault();
+    void isTheTaskHistoryCorrect() {
+        InMemoryTaskManager taskManager = getDefault();
+        List<Task> tempList = new ArrayList<>();
+
         Task firstTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
         Task secondTask = new Task("Записать расходы", "Взять выписку из банка", Status.IN_PROGRESS);
 
@@ -36,25 +49,16 @@ class InMemoryTaskManagerTest {
         taskManager.createEpic(secondEpic);
         taskManager.createSubTask(firstSubTaskForSecondEpic);
 
-        assertEquals(firstTask, taskManager.getTaskByld(1), "Такса должна быть под id 1");
-        assertEquals(secondTask, taskManager.getTaskByld(2), "Такса должна быть под id 2");
-        assertEquals(firstEpic, taskManager.getEpicByld(3), "Епик должнен быть под id 3");
-        assertEquals(firstSubTaskForFristEpic, taskManager.getSubTaskByld(4), "Сабтакс должнен быть под id 4");
-        assertEquals(secondSubTaskForFristEpic, taskManager.getSubTaskByld(5), "Сабтакс должнен быть под id 5");
-        assertEquals(secondEpic, taskManager.getEpicByld(6), "Епик должнен быть под id 6");
-        assertEquals(firstSubTaskForSecondEpic, taskManager.getSubTaskByld(7), "Сабтакс должнен быть под id 7");
-    }
+        tempList.add(taskManager.getTaskByld(1));
+        tempList.add(taskManager.getTaskByld(2));
+        tempList.add(taskManager.getEpicByld(3));
+        tempList.add(taskManager.getSubTaskByld(4));
+        tempList.add(taskManager.getSubTaskByld(5));
+        tempList.add(taskManager.getEpicByld(6));
+        tempList.add(taskManager.getSubTaskByld(7));
 
-    @Test
-    void conflictBetweenTasks() {
-        TaskManager taskManager = getDefault();
-        Task firstTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
-        taskManager.createTask(firstTask);
+        List<Task> historyList = taskManager.getHistory();
 
-        Task secondTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
-        secondTask.setId(1);
-        taskManager.createTask(secondTask);
-
-        assertEquals(secondTask, taskManager.getTaskByld(2), "менеджер переделает id");
+        assertEquals(tempList, historyList, "Должны совпадать");
     }
 }

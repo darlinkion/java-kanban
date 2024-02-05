@@ -11,10 +11,10 @@ import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private HashMap<Integer, Task> tasks;
-    private HashMap<Integer, Epic> epics;
-    private HashMap<Integer, SubTask> subTasks;
-    private HistoryManager historyManager;
+    private final HashMap<Integer, Task> tasks;
+    private final HashMap<Integer, Epic> epics;
+    private final HashMap<Integer, SubTask> subTasks;
+    private final HistoryManager historyManager;
 
     private int id;
 
@@ -26,34 +26,51 @@ public class InMemoryTaskManager implements TaskManager {
         id = 0;
     }
 
-    public List<Task> getHistoryList() {
-        return historyManager.getHistory();
+    @Override
+    public List<Task> getHistory() {
+        return historyManager.getHistoryList();
     }
 
     @Override
-    public Task createTask(Task task) {
-        task.setId(generationId());
-        tasks.put(task.getId(), task);
-        return task;
+    public int createTask(Task task) {
+        int tempId;
+        if (task == null) {
+            return -1;
+        }
+        tempId = generationId();
+        task.setId(tempId);
+        tasks.put(tempId, task);
+        return tempId;
     }
 
     @Override
-    public void createSubTask(SubTask subTask) {
+    public int createSubTask(SubTask subTask) {
+        int tempId;
+        if (subTask == null) {
+            return -2;
+        }
         Epic tempEpic = getEpicByldForCreatSubtask(subTask.getEpicId());
         if (tempEpic == null) {
-            return;
+            return -1;
         }
-
-        subTask.setId(generationId());
-        subTasks.put(subTask.getId(), subTask);
-        tempEpic.addSubTaskId(subTask.getId());
+        tempId = generationId();
+        subTask.setId(tempId);
+        subTasks.put(tempId, subTask);
+        tempEpic.addSubTaskId(tempId);
         updateEpicStatus(tempEpic.getId());
+        return tempId;
     }
 
     @Override
-    public void createEpic(Epic epic) {
-        epic.setId(generationId());
-        epics.put(epic.getId(), epic);
+    public int createEpic(Epic epic) {
+        int tempId;
+        if (epic == null) {
+            return -1;
+        }
+        tempId = generationId();
+        epic.setId(tempId);
+        epics.put(tempId, epic);
+        return tempId;
     }
 
     @Override
