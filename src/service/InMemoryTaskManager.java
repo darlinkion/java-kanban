@@ -8,6 +8,7 @@ import model.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -127,16 +128,26 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void cleanTasks() {
+        for (Map.Entry<Integer, Task> tempMap : tasks.entrySet()) {
+            historyManager.removeTaskFromHistory(tempMap.getKey());
+        }
         tasks.clear();
     }
 
     @Override
     public void cleanSubTasks() {
+        for (Map.Entry<Integer, SubTask> tempMap : subTasks.entrySet()) {
+            historyManager.removeTaskFromHistory(tempMap.getKey());
+        }
         subTasks.clear();
     }
 
     @Override
     public void cleanEpics() {
+        for (Map.Entry<Integer, Epic> tempMap : epics.entrySet()) {
+            historyManager.removeTaskFromHistory(tempMap.getKey());
+        }
+        cleanSubTasks();
         epics.clear();
     }
 
@@ -174,6 +185,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeForIdTask(Integer id) {
         tasks.remove(id);
+        historyManager.removeTaskFromHistory(id);
     }
 
     @Override
@@ -182,8 +194,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (tempEpic == null) return;
         for (Integer subTaskId : tempEpic.getSubTaskIds()) {
             subTasks.remove(subTaskId);
+            historyManager.removeTaskFromHistory(subTaskId);
         }
         epics.remove(id);
+        historyManager.removeTaskFromHistory(id);
     }
 
     @Override
@@ -193,6 +207,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         tempEpic.removeSubTaskId(id);
         subTasks.remove(id);
+        historyManager.removeTaskFromHistory(id);
         updateEpicStatus(tempEpic.getId());
 
     }

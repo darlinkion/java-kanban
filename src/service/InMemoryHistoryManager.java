@@ -37,6 +37,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
+    @Override
     public void removeTaskFromHistory(int id) {
         Node node = history.get(id);
         if (node != null) {
@@ -45,45 +46,29 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-
     private Node linkLast(Task task) {
         Node newNode = new Node(null, task, null);
 
         if (head == null) {
             head = newNode;
-        } else if (tail == null) {
-            tail = newNode;
-            tail.prev = head;
-            head.next = tail;
         } else {
-            Node oldTail = tail;
-            tail = newNode;
-            oldTail.next = tail;
-            tail.prev = oldTail;
+            tail.next = newNode;
         }
+        tail = newNode;
+
         return newNode;
     }
 
     private void removeNode(Node removNode) {
-        Node tempNext;
-        Node tempPrev;
-
         if (removNode.prev != null && removNode.next != null) {
-            tempNext = removNode.next;
-            tempPrev = removNode.prev;
-
-            tempNext.prev = tempPrev;
-            tempPrev.next = tempNext;
-        } else if (removNode.next == null) {
-            tempPrev = tail.prev;
-            tempPrev.next = null;
-            tail = tempPrev;
-            if (tail.prev == null) {
-                tail = null;
-            }
+            removNode.next.prev = removNode.prev;
+            removNode.prev.next = removNode.next;
+        } else if (removNode.next == null && removNode.prev != null) {
+            removNode.prev.next = null;
+            tail = removNode.prev;
         } else {
-            head = head.next;
-            head.prev = null;
+            head = null;
+            tail = null;
         }
     }
 
