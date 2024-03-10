@@ -3,7 +3,7 @@ package model;
 public class Task {
     protected String name;
     protected String description;
-    protected int id;
+    protected Integer id = null;
     protected Status status;
 
     public Task() {
@@ -36,7 +36,9 @@ public class Task {
     }
 
     public void setId(int id) {
-        this.id = id;
+        if (this.id == null) {
+            this.id = id;
+        }
     }
 
     public Status getStatus() {

@@ -9,18 +9,27 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static service.Managers.getDefault;
 
 class HistoryManagerTest {
     @Test
-    void getHistoryList() {
+    void getHistoryListTest() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         Task firstTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
+        Task secondTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
+        Task threeTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
+        firstTask.setId(1);
+        secondTask.setId(2);
+        threeTask.setId(3);
         inMemoryHistoryManager.addTaskHistory(firstTask);
+        inMemoryHistoryManager.addTaskHistory(secondTask);
+        inMemoryHistoryManager.addTaskHistory(threeTask);
+
         List<Task> tempList = new ArrayList<>();
         tempList.add(firstTask);
+        tempList.add(secondTask);
+        tempList.add(threeTask);
 
         assertEquals(tempList, inMemoryHistoryManager.getHistoryList(), "Должны совпадать");
     }
@@ -61,4 +70,47 @@ class HistoryManagerTest {
 
         assertEquals(tempList, historyList, "Должны совпадать");
     }
+
+    @Test
+    void removeHystoryStart() {
+        InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+        Task firstTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
+        Task secondTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
+        Task threeTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
+        firstTask.setId(1);
+        secondTask.setId(2);
+        threeTask.setId(3);
+        inMemoryHistoryManager.addTaskHistory(firstTask);
+        inMemoryHistoryManager.addTaskHistory(secondTask);
+        inMemoryHistoryManager.addTaskHistory(threeTask);
+
+        List<Task> tempList = new ArrayList<>();
+        tempList.add(secondTask);
+        tempList.add(threeTask);
+
+        inMemoryHistoryManager.removeTaskFromHistory(1);
+        assertEquals(tempList, inMemoryHistoryManager.getHistoryList(), "Должны совпадать");
+    }
+
+    @Test
+    void removeHystoryLast() {
+        InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+        Task firstTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
+        Task secondTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
+        Task threeTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
+        firstTask.setId(1);
+        secondTask.setId(2);
+        threeTask.setId(3);
+        inMemoryHistoryManager.addTaskHistory(firstTask);
+        inMemoryHistoryManager.addTaskHistory(secondTask);
+        inMemoryHistoryManager.addTaskHistory(threeTask);
+
+        List<Task> tempList = new ArrayList<>();
+        tempList.add(firstTask);
+        tempList.add(secondTask);
+
+        inMemoryHistoryManager.removeTaskFromHistory(3);
+        assertEquals(tempList, inMemoryHistoryManager.getHistoryList(), "Должны совпадать");
+    }
+
 }
