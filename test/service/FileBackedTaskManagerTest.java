@@ -46,9 +46,28 @@ class FileBackedTaskManagerTest {
         List<SubTask> listLoadSubtask = taskManager.getAllSubTasks();
         List<Task> listLoadHistory = taskManager.getHistory();
 
-        assertEquals(subtaskFirst, listLoadSubtask.get(0), "Задачи не совпадают.");
-        assertEquals(task, listLoadTask.get(0), "Задачи не совпадают.");
-        assertEquals(epic, listLoadEpic.get(0), "Задачи не совпадают.");
+        assertEquals(subtaskFirst.getName(), listLoadSubtask.get(0).getName(), "Поля name у задачи не совпадают.");
+        assertEquals(subtaskFirst.getId(), listLoadSubtask.get(0).getId(), "Поля id у задачи не совпадают.");
+        assertEquals(subtaskFirst.getEpicId(), listLoadSubtask.get(0).getEpicId(), "Поля epicId у задачи не совпадают.");
+        assertEquals(subtaskFirst.getStatus(), listLoadSubtask.get(0).getStatus(), "Поля staus у задачи не совпадают.");
+        assertEquals(subtaskFirst.getDescription(), listLoadSubtask.get(0).getDescription(), "Поля description у задачи не совпадают.");
+        assertEquals(subtaskFirst.getTaskType(), listLoadSubtask.get(0).getTaskType(), "Поля taskType у задачи не совпадают.");
+
+        assertEquals(task.getName(), listLoadTask.get(0).getName(), "Поля name у задачи не совпадают.");
+        assertEquals(task.getId(), listLoadTask.get(0).getId(), "Поля id у задачи не совпадают.");
+        assertEquals(task.getEpicId(), listLoadTask.get(0).getEpicId(), "Поля epicId у задачи не совпадают.");
+        assertEquals(task.getStatus(), listLoadTask.get(0).getStatus(), "Поля staus у задачи не совпадают.");
+        assertEquals(task.getDescription(), listLoadTask.get(0).getDescription(), "Поля description у задачи не совпадают.");
+        assertEquals(task.getTaskType(), listLoadTask.get(0).getTaskType(), "Поля taskType у задачи не совпадают.");
+
+        assertEquals(epic.getName(), listLoadEpic.get(0).getName(), "Поля name у задачи не совпадают.");
+        assertEquals(epic.getId(), listLoadEpic.get(0).getId(), "Поля id у задачи не совпадают.");
+        assertEquals(epic.getEpicId(), listLoadEpic.get(0).getEpicId(), "Поля epicId у задачи не совпадают.");
+        assertEquals(epic.getStatus(), listLoadEpic.get(0).getStatus(), "Поля staus у задачи не совпадают.");
+        assertEquals(epic.getDescription(), listLoadEpic.get(0).getDescription(), "Поля description у задачи не совпадают.");
+        assertEquals(epic.getTaskType(), listLoadEpic.get(0).getTaskType(), "Поля taskType у задачи не совпадают.");
+        assertEquals(epic.getSubTaskIds(), listLoadEpic.get(0).getSubTaskIds(), "Поля subTaskIds у задачи не совпадают.");
+
         assertEquals(listHistory.get(0), listLoadHistory.get(0), "Истории не совпадают.");
         assertEquals(listHistory.get(1), listLoadHistory.get(1), "Истории не совпадают.");
         assertEquals(listHistory.size(), listLoadHistory.size(), "Количество историй не совпадает.");

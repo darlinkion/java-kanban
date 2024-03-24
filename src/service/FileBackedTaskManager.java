@@ -25,6 +25,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         int maxId = 0;
         int tempId;
 
+
         try (FileReader fileReader = new FileReader(file)) {
             BufferedReader br = new BufferedReader(fileReader);
             while (br.ready()) {
@@ -32,7 +33,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 linesList.add(line);
             }
 
-            for (int i = 0; i < linesList.size() - 2; i++) {
+            if (linesList.isEmpty()) {
+                return Managers.getDefaultFile();
+            }
+
+            for (int i = 1; i < linesList.size() - 2; i++) {
 
                 String[] oneLine = linesList.get(i).split(",");
                 if ((TaskType.TASK).toString().equals(oneLine[1])) {
@@ -42,7 +47,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     if (tempId > maxId) {
                         maxId = tempId;
                     }
-                    fileBackedTaskManager.createTask(tempTask);
+                    fileBackedTaskManager.tasks.put(tempId, tempTask);
                 } else if ((TaskType.EPIC).toString().equals(oneLine[1])) {
                     Epic tempEpic = new Epic(oneLine[2], oneLine[4], Status.valueOf(oneLine[3]));
                     tempId = Integer.parseInt(oneLine[0]);
@@ -50,41 +55,34 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     if (tempId > maxId) {
                         maxId = tempId;
                     }
-                    fileBackedTaskManager.createEpic(tempEpic);
-                }
-            }
-            for (int i = 0; i < linesList.size() - 2; i++) {
-
-                String[] oneLine = linesList.get(i).split(",");
-                if ((TaskType.SUBTASK).toString().equals(oneLine[1])) {
-                    String[] tempStr = oneLine[5].split(";");
-                    SubTask subTask = new SubTask(oneLine[2], oneLine[4], Status.valueOf(oneLine[3]), Integer.parseInt(tempStr[0]));
+                    fileBackedTaskManager.epics.put(tempId, tempEpic);
+                } else if ((TaskType.SUBTASK).toString().equals(oneLine[1])) {
+                    SubTask tempSubTask = new SubTask(oneLine[2], oneLine[4], Status.valueOf(oneLine[3]), Integer.parseInt(oneLine[5]));
                     tempId = Integer.parseInt(oneLine[0]);
-                    subTask.setId(tempId);
+                    tempSubTask.setId(tempId);
                     if (tempId > maxId) {
                         maxId = tempId;
                     }
-                    fileBackedTaskManager.createSubTask(subTask);
+                    fileBackedTaskManager.subTasks.put(tempId, tempSubTask);
                 }
+            }
+
+            for (SubTask subTask : fileBackedTaskManager.subTasks.values()) {
+                int tempEpicId = subTask.getEpicId();
+                Epic tempEpic = fileBackedTaskManager.epics.get(tempEpicId);
+                tempEpic.addSubTaskId(subTask.getId());
             }
             fileBackedTaskManager.historyFromString(linesList.get(linesList.size() - 1));
 
 
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new ManagerSaveException("Файл не найден " + e.getMessage());
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (IndexOutOfBoundsException exception) {
-            return Managers.getDefaultFile();
+            throw new ManagerSaveException("Ошибка IO " + e.getMessage());
         }
         fileBackedTaskManager.id = maxId;
 
         return fileBackedTaskManager;
-    }
-
-    @Override
-    public List<Task> getHistory() {
-        return super.getHistory();
     }
 
     @Override
@@ -110,32 +108,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public Task getTaskByld(int id) {
-        return super.getTaskByld(id);
+        Task tempTask = super.getTaskByld(id);
+        save();
+        return tempTask;
     }
 
     @Override
     public Epic getEpicByld(int id) {
-        return super.getEpicByld(id);
+        Epic tempEpic = super.getEpicByld(id);
+        save();
+        return tempEpic;
     }
 
     @Override
     public SubTask getSubTaskByld(int id) {
-        return super.getSubTaskByld(id);
-    }
-
-    @Override
-    public List<Task> getAllTasks() {
-        return super.getAllTasks();
-    }
-
-    @Override
-    public List<SubTask> getAllSubTasks() {
-        return super.getAllSubTasks();
-    }
-
-    @Override
-    public List<Epic> getAllEpics() {
-        return super.getAllEpics();
+        SubTask tempSubTask = super.getSubTaskByld(id);
+        save();
+        return tempSubTask;
     }
 
     @Override
@@ -192,19 +181,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    @Override
-    public List<SubTask> getEpicListSubTask(Integer id) {
-        return super.getEpicListSubTask(id);
-    }
-
     private String historyToString(HistoryManager manager) {
         StringBuilder historyStringLine = new StringBuilder();
         List<Task> tempListHistoryManager = manager.getHistoryList();
-
-        for (Task task : tempListHistoryManager) {
-            historyStringLine.append(task.getId() + ",");
+        if (tempListHistoryManager.size() > 0) {
+            historyStringLine.append(tempListHistoryManager.get(0).getId());
+            tempListHistoryManager.remove(0);
         }
-        //historyStringLine.deleteCharAt(historyStringLine.toString().length()-1);
+        for (Task task : tempListHistoryManager) {
+            historyStringLine.append("," + task.getId());
+        }
         return historyStringLine.toString();
     }
 

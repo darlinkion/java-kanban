@@ -83,7 +83,7 @@ public class Task {
                 "," + task.getStatus() +
                 "," + task.getDescription() +
                 "," + task.getEpicId() +
-                ";\n";
+                "\n";
     }
 
     public Integer getEpicId() {
