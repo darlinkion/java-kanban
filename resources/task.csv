@@ -1,0 +1,6 @@
+id,type,name,status,description,epic
+1,TASK,Уборка,NEW,Убрать квартиру,null;
+2,EPIC,Готовка,NEW,Выполинть дела,null;
+3,SUBTASK,Покупка продуктов,NEW,идти в магазин,2;
+4,SUBTASK,Готовка,NEW,Идти на кунхню,2;
+
