@@ -72,7 +72,7 @@ class HistoryManagerTest {
     }
 
     @Test
-    void removeHystoryStart() {
+    void removeHistoryStart() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         Task firstTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
         Task secondTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
@@ -93,7 +93,7 @@ class HistoryManagerTest {
     }
 
     @Test
-    void removeHystoryLast() {
+    void removeHistoryLast() {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         Task firstTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
         Task secondTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);

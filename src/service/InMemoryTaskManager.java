@@ -12,12 +12,12 @@ import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private final HashMap<Integer, Task> tasks;
-    private final HashMap<Integer, Epic> epics;
-    private final HashMap<Integer, SubTask> subTasks;
-    private final HistoryManager historyManager;
+    protected final HashMap<Integer, Task> tasks;
+    protected final HashMap<Integer, Epic> epics;
+    protected final HashMap<Integer, SubTask> subTasks;
+    protected final HistoryManager historyManager;
 
-    private int id;
+    protected int id;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
@@ -40,8 +40,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
         tempId = generationId();
         task.setId(tempId);
-        tasks.put(tempId, task);
-        return tempId;
+        tasks.put(task.getId(), task);
+        return task.getId();
     }
 
     @Override
@@ -56,10 +56,10 @@ public class InMemoryTaskManager implements TaskManager {
         }
         tempId = generationId();
         subTask.setId(tempId);
-        subTasks.put(tempId, subTask);
-        tempEpic.addSubTaskId(tempId);
+        subTasks.put(subTask.getId(), subTask);
+        tempEpic.addSubTaskId(subTask.getId());
         updateEpicStatus(tempEpic.getId());
-        return tempId;
+        return subTask.getId();
     }
 
     @Override
@@ -70,8 +70,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
         tempId = generationId();
         epic.setId(tempId);
-        epics.put(tempId, epic);
-        return tempId;
+        epics.put(epic.getId(), epic);
+        return epic.getId();
     }
 
     @Override

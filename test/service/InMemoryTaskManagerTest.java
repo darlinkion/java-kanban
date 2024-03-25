@@ -58,7 +58,7 @@ class InMemoryTaskManagerTest {
         SubTask firstSubTaskForFristEpic = new SubTask("Изучить теорию", "Пройти уроки спринта", Status.NEW, 3);
         SubTask secondSubTaskForFristEpic = new SubTask("Пройти тренажер", "...", Status.NEW, 3);
 
-        assertEquals(secondTask, taskManager.getTaskByld(2), "менеджер переделает id");
+        assertEquals(secondTask, taskManager.getTaskByld(1), "менеджер переделает id");
     }
 
     @Test
