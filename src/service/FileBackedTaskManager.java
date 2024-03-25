@@ -1,5 +1,7 @@
 package service;
 
+import exception.ManagerIOException;
+import exception.ManagerLoadFileException;
 import exception.ManagerSaveException;
 import model.*;
 
@@ -76,9 +78,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
 
         } catch (FileNotFoundException e) {
-            throw new ManagerSaveException("Файл не найден " + e.getMessage());
+            throw new ManagerLoadFileException("Файл не найден " + e.getMessage());
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка IO " + e.getMessage());
+            throw new ManagerIOException("Ошибка IO " + e.getMessage());
         }
         fileBackedTaskManager.id = maxId;
 
@@ -184,11 +186,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private String historyToString(HistoryManager manager) {
         StringBuilder historyStringLine = new StringBuilder();
         List<Task> tempListHistoryManager = manager.getHistoryList();
-        if (tempListHistoryManager.size() > 0) {
+        if (!tempListHistoryManager.isEmpty())
             historyStringLine.append(tempListHistoryManager.get(0).getId());
-            tempListHistoryManager.remove(0);
-        }
-        for (Task task : tempListHistoryManager) {
+        for (int i = 1; i < tempListHistoryManager.size(); i++) {
+            Task task = tempListHistoryManager.get(i);
             historyStringLine.append("," + task.getId());
         }
         return historyStringLine.toString();
