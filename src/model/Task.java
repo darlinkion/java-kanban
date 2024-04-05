@@ -9,6 +9,10 @@ public class Task {
     public Task() {
     }
 
+    public TaskType getTaskType() {
+        return TaskType.TASK;
+    }
+
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
@@ -69,6 +73,21 @@ public class Task {
                 ",description='" + description + '\'' +
                 ",status='" + status + '\'' +
                 "}\n";
+    }
+
+
+    public String toString(Task task) {
+        return task.getId() +
+                "," + task.getTaskType() +
+                "," + task.getName() +
+                "," + task.getStatus() +
+                "," + task.getDescription() +
+                "," + task.getEpicId() +
+                "\n";
+    }
+
+    public Integer getEpicId() {
+        return null;
     }
 }
 
