@@ -4,7 +4,9 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.TreeMap;
 
 public interface TaskManager {
     int createTask(Task task);
@@ -13,11 +15,11 @@ public interface TaskManager {
 
     int createEpic(Epic epic);
 
-    Task getTaskByld(int id);
+    Task getTaskByld(Integer id);
 
-    Epic getEpicByld(int id);
+    Epic getEpicByld(Integer id);
 
-    SubTask getSubTaskByld(int id);
+    SubTask getSubTaskByld(Integer id);
 
     List<Task> getHistory();
 
@@ -45,5 +47,9 @@ public interface TaskManager {
 
     void removeForIdSubTask(Integer id);
 
+    void updateTimeForAllEpics();
+
     List<SubTask> getEpicListSubTask(Integer id);
+
+    TreeMap<LocalDateTime, Task> getPrioritizedTasks();
 }

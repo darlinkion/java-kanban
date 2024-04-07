@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,7 +26,7 @@ class FileBackedTaskManagerTest {
     @Test
     public void checkSaveAndLoadNorm() {
         File file = taskManager.getFile();
-        Task task = new Task("Уборка", "Убрать квартиру", Status.NEW);
+        Task task = new Task("Уборка", "Убрать квартиру", Status.NEW, LocalDateTime.now(), Duration.ofMinutes(10));
         int newId = taskManager.createTask(task);
         taskManager.getTaskByld(newId);
 
@@ -32,10 +34,10 @@ class FileBackedTaskManagerTest {
         int newIdEpic = taskManager.createEpic(epic);
         taskManager.getEpicByld(newIdEpic);
 
-        SubTask subtaskFirst = new SubTask("Покупка продуктов", "идти в магазин", Status.NEW, epic.getId());
+        SubTask subtaskFirst = new SubTask("Покупка продуктов", "идти в магазин", Status.NEW, epic.getId(), LocalDateTime.now().plusMinutes(15), Duration.ofMinutes(10));
         int idSubtaskFirst = taskManager.createSubTask(subtaskFirst);
         taskManager.getSubTaskByld(idSubtaskFirst);
-        SubTask subtaskSecond = new SubTask("Готовка", "Идти на кунхню", Status.NEW, epic.getId());
+        SubTask subtaskSecond = new SubTask("Готовка", "Идти на кунхню", Status.NEW, epic.getId(), LocalDateTime.now().plusMinutes(35), Duration.ofMinutes(10));
         int idSubtaskSecond = taskManager.createSubTask(subtaskSecond);
 
         List<Task> listHistory = taskManager.getHistory();

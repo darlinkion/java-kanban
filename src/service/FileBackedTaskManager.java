@@ -6,6 +6,8 @@ import exception.ManagerSaveException;
 import model.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,10 +17,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public FileBackedTaskManager(HistoryManager historyManager, File file) {
         super(historyManager);
         this.file = file;
-    }
-
-    public File getFile() {
-        return file;
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {
@@ -46,6 +44,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     Task tempTask = new Task(oneLine[2], oneLine[4], Status.valueOf(oneLine[3]));
                     tempId = Integer.parseInt(oneLine[0]);
                     tempTask.setId(tempId);
+                    if (!oneLine[6].equals("null")) {
+                        tempTask.setDuration(Duration.parse(oneLine[6]));
+                    }
+                    if (!oneLine[7].equals("null")) {
+                        tempTask.setStartTime(LocalDateTime.parse(oneLine[7]));
+                    }
                     if (tempId > maxId) {
                         maxId = tempId;
                     }
@@ -62,6 +66,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     SubTask tempSubTask = new SubTask(oneLine[2], oneLine[4], Status.valueOf(oneLine[3]), Integer.parseInt(oneLine[5]));
                     tempId = Integer.parseInt(oneLine[0]);
                     tempSubTask.setId(tempId);
+                    if (!oneLine[6].equals("null")) {
+                        tempSubTask.setDuration(Duration.parse(oneLine[6]));
+                    }
+                    if (!oneLine[7].equals("null")) {
+                        tempSubTask.setStartTime(LocalDateTime.parse(oneLine[7]));
+                    }
                     if (tempId > maxId) {
                         maxId = tempId;
                     }
@@ -75,7 +85,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 tempEpic.addSubTaskId(subTask.getId());
             }
             fileBackedTaskManager.historyFromString(linesList.get(linesList.size() - 1));
-
+            fileBackedTaskManager.updateTimeForAllEpics();
 
         } catch (FileNotFoundException e) {
             throw new ManagerLoadFileException("Файл не найден " + e.getMessage());
@@ -85,6 +95,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         fileBackedTaskManager.id = maxId;
 
         return fileBackedTaskManager;
+    }
+
+    public File getFile() {
+        return file;
     }
 
     @Override
@@ -109,21 +123,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Task getTaskByld(int id) {
+    public Task getTaskByld(Integer id) {
         Task tempTask = super.getTaskByld(id);
         save();
         return tempTask;
     }
 
     @Override
-    public Epic getEpicByld(int id) {
+    public Epic getEpicByld(Integer id) {
         Epic tempEpic = super.getEpicByld(id);
         save();
         return tempEpic;
     }
 
     @Override
-    public SubTask getSubTaskByld(int id) {
+    public SubTask getSubTaskByld(Integer id) {
         SubTask tempSubTask = super.getSubTaskByld(id);
         save();
         return tempSubTask;
@@ -213,7 +227,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (Writer fileWriter = new FileWriter(file)) {
-            fileWriter.write("id,type,name,status,description,epic\n");
+            fileWriter.write("id,type,name,status,description,epic,duration,startTime\n");
 
             for (Task task : tasks.values()) {
                 fileWriter.write(task.toString(task));

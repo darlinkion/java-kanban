@@ -1,20 +1,22 @@
 package service;
 
+import exception.NotFoundException;
+import exception.ValidationExeption;
 import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
     protected final HashMap<Integer, Task> tasks;
     protected final HashMap<Integer, Epic> epics;
     protected final HashMap<Integer, SubTask> subTasks;
+    protected final TreeMap<LocalDateTime, Task> prioritizedTasks;
     protected final HistoryManager historyManager;
 
     protected int id;
@@ -24,6 +26,7 @@ public class InMemoryTaskManager implements TaskManager {
         this.tasks = new HashMap<>();
         this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
+        this.prioritizedTasks = new TreeMap<>();
         id = 0;
     }
 
@@ -32,16 +35,51 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistoryList();
     }
 
+    private boolean timeCrossing(Task task) {
+        if (task == null) {
+            throw new ValidationExeption("Передан пустой Task для проверки пересечения задач по времени");
+        }
+        LocalDateTime startTime = task.getStartTime();
+        LocalDateTime endTime = task.getEndTime();
+
+        if (startTime == null || endTime == null) {
+            throw new ValidationExeption("Ошибка задачи в части полей startTime или endTime\n" + task);
+        }
+
+        for (Task tempTask : prioritizedTasks.values()) {
+            LocalDateTime oldStartTime = tempTask.getStartTime();
+            LocalDateTime oldEndTime = tempTask.getEndTime();
+
+            boolean firstCross = checkDataTimeCrossing(startTime, oldStartTime, oldEndTime);
+            boolean secondCross = checkDataTimeCrossing(endTime, oldStartTime, oldEndTime);
+            if (!firstCross || !secondCross) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean checkDataTimeCrossing(LocalDateTime localDateTime, LocalDateTime start, LocalDateTime end) {
+        return localDateTime.isAfter(end) || localDateTime.isBefore(start);
+    }
+
+
     @Override
     public int createTask(Task task) {
         int tempId;
         if (task == null) {
             return -1;
         }
-        tempId = generationId();
-        task.setId(tempId);
-        tasks.put(task.getId(), task);
-        return task.getId();
+
+        if (!timeCrossing(task)) {
+            tempId = generationId();
+            task.setId(tempId);
+            tasks.put(task.getId(), task);
+            prioritizedTasks.put(task.getStartTime(), task);
+            return task.getId();
+        }
+        return -3;
     }
 
     @Override
@@ -50,16 +88,22 @@ public class InMemoryTaskManager implements TaskManager {
         if (subTask == null) {
             return -2;
         }
-        Epic tempEpic = getEpicByldForCreatSubtask(subTask.getEpicId());
+        Integer tempEpicId = subTask.getEpicId();
+        Epic tempEpic = getEpicByldForCreatSubtask(tempEpicId);
         if (tempEpic == null) {
             return -1;
         }
-        tempId = generationId();
-        subTask.setId(tempId);
-        subTasks.put(subTask.getId(), subTask);
-        tempEpic.addSubTaskId(subTask.getId());
-        updateEpicStatus(tempEpic.getId());
-        return subTask.getId();
+        if (!timeCrossing(subTask)) {
+            tempId = generationId();
+            subTask.setId(tempId);
+            subTasks.put(tempId, subTask);
+            prioritizedTasks.put(subTask.getStartTime(), subTask);
+            tempEpic.addSubTaskId(tempId);
+            updateEpicStatus(tempEpicId);
+            updateTimeAndDurationEpic(tempEpicId);
+            return tempId;
+        }
+        return -3;
     }
 
     @Override
@@ -75,22 +119,40 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTaskByld(int id) {
+    public Task getTaskByld(Integer id) {
+        if (id == null) {
+            throw new NotFoundException("Поиск Task по null id");
+        }
         Task tempTask = tasks.get(id);
+        if (tempTask == null) {
+            throw new NotFoundException("Не найден Task по id" + id);
+        }
         historyManager.addTaskHistory(tempTask);
         return tempTask;
     }
 
     @Override
-    public Epic getEpicByld(int id) {
+    public Epic getEpicByld(Integer id) {
+        if (id == null) {
+            throw new NotFoundException("Поиск Epic по null id");
+        }
         Epic tempEpic = epics.get(id);
+        if (tempEpic == null) {
+            throw new NotFoundException("Не найден Epic по id" + id);
+        }
         historyManager.addTaskHistory(tempEpic);
         return tempEpic;
     }
 
     @Override
-    public SubTask getSubTaskByld(int id) {
+    public SubTask getSubTaskByld(Integer id) {
+        if (id == null) {
+            throw new NotFoundException("Поиск SubTask по null id");
+        }
         SubTask tempSubTask = subTasks.get(id);
+        if (tempSubTask == null) {
+            throw new NotFoundException("Не найден Subtask по id" + id);
+        }
         historyManager.addTaskHistory(tempSubTask);
         return tempSubTask;
     }
@@ -162,7 +224,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
-        Task tempTask = tasks.get(task.getId());
+        Integer taskId = task.getId();
+        if (taskId == null) {
+            throw new ValidationExeption("У Task не присвоен id");
+        }
+        Task tempTask = tasks.get(taskId);
         if (tempTask != null) {
             tasks.put(task.getId(), task);
         } else {
@@ -172,10 +238,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        SubTask tempSubTask = subTasks.get(subTask.getId());
+        Integer subTaskId = subTask.getId();
+        if (subTaskId == null) {
+            throw new NotFoundException("У SubTask не присвоен id");
+        }
+        SubTask tempSubTask = subTasks.get(subTaskId);
         if (tempSubTask != null) {
             subTasks.put(subTask.getId(), subTask);
             updateEpicStatus(subTask.getEpicId());
+            updateTimeAndDurationEpic(subTask.getEpicId());
         } else {
             System.out.println("Tакого SubTask не существует!");
         }
@@ -218,7 +289,7 @@ public class InMemoryTaskManager implements TaskManager {
         subTasks.remove(id);
         historyManager.removeTaskFromHistory(id);
         updateEpicStatus(tempEpic.getId());
-
+        updateTimeAndDurationEpic(tempEpic.getId());
     }
 
     @Override
@@ -234,6 +305,18 @@ public class InMemoryTaskManager implements TaskManager {
         return subTaskList;
     }
 
+    @Override
+    public void updateTimeForAllEpics() {
+        for (Integer tempEpicId : epics.keySet()) {
+            updateTimeAndDurationEpic(tempEpicId);
+        }
+    }
+
+    @Override
+    public TreeMap<LocalDateTime, Task> getPrioritizedTasks() {
+        return new TreeMap<>(prioritizedTasks);
+    }
+
     private int generationId() {
         return ++id;
     }
@@ -247,7 +330,9 @@ public class InMemoryTaskManager implements TaskManager {
         int statusNew = 0;
         int statusDone = 0;
 
-        if (tempEpic == null) return;
+        if (tempEpic == null) {
+            throw new NotFoundException("Не найден Epic по id:" + epicId);
+        }
         if (tempEpic.getSubTaskIds() == null) {
             tempEpic.setStatus(Status.NEW);
         }
@@ -269,5 +354,53 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             tempEpic.setStatus(Status.IN_PROGRESS);
         }
+    }
+
+    private void updateTimeAndDurationEpic(Integer epicId) {
+        Epic tempEpic = epics.get(epicId);
+        LocalDateTime startTimeEpic = null;
+        LocalDateTime endTimeEpic = null;
+        Duration durationEpic = null;
+        List<Integer> subTasksList;
+
+        if (tempEpic == null) {
+            throw new NotFoundException("Не найден Epic по id:" + epicId);
+        }
+
+        LocalDateTime oldStartTimeEpic = tempEpic.getStartTime();
+        subTasksList = tempEpic.getSubTaskIds();
+
+        if (subTasksList == null) {
+            return;
+        }
+
+        for (int i = 0; i < subTasksList.size(); i++) {
+            SubTask tempSubtask = subTasks.get(subTasksList.get(i));
+            if (tempSubtask == null) {
+                throw new NotFoundException("Не найдет Subtask по id при расчете времени Epic");
+            }
+
+            if (durationEpic != null) {
+                durationEpic = durationEpic.plus(tempSubtask.getDuration());
+            } else {
+                durationEpic = tempSubtask.getDuration();
+            }
+
+            if (startTimeEpic != null) {
+                if (startTimeEpic.isAfter(tempSubtask.getStartTime())) {
+                    startTimeEpic = tempSubtask.getStartTime();
+                }
+                if (endTimeEpic.isBefore(tempSubtask.getEndTime())) {
+                    endTimeEpic = tempSubtask.getEndTime();
+                }
+            } else {
+                startTimeEpic = tempSubtask.getStartTime();
+                endTimeEpic = tempSubtask.getEndTime();
+            }
+        }
+
+        tempEpic.setDuration(durationEpic);
+        tempEpic.setStartTime(startTimeEpic);
+        tempEpic.setEndTimeEpic(endTimeEpic);
     }
 }

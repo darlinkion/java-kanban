@@ -6,6 +6,8 @@ import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,16 +41,20 @@ class HistoryManagerTest {
         InMemoryTaskManager taskManager = getDefault();
         List<Task> tempList = new ArrayList<>();
 
-        Task firstTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW);
-        Task secondTask = new Task("Записать расходы", "Взять выписку из банка", Status.IN_PROGRESS);
+        Task firstTask = new Task("Уборка", "Нужно убрать всю квартиру", Status.NEW,
+                LocalDateTime.now(), Duration.ofMinutes(10));
+        Task secondTask = new Task("Записать расходы", "Взять выписку из банка", Status.IN_PROGRESS,
+                LocalDateTime.now().plusMinutes(11), Duration.ofMinutes(18));
 
         Epic firstEpic = new Epic("Пройти 4 спринт", "Разбить прохождение српинта на маленькие задачи", Status.NEW);
-        SubTask firstSubTaskForFristEpic = new SubTask("Изучить теорию", "Пройти уроки спринта", Status.NEW, 3);
-        SubTask secondSubTaskForFristEpic = new SubTask("Пройти тренажер", "...", Status.NEW, 3);
+        SubTask firstSubTaskForFristEpic = new SubTask("Изучить теорию", "Пройти уроки спринта", Status.NEW, 3,
+                LocalDateTime.now().plusMinutes(30), Duration.ofMinutes(10));
+        SubTask secondSubTaskForFristEpic = new SubTask("Пройти тренажер", "...", Status.NEW, 3,
+                LocalDateTime.now().plusHours(3), Duration.ofMinutes(5));
 
         Epic secondEpic = new Epic("Купить штаны", "Разбить покупку штанов на маленькие задачи", Status.NEW);
         SubTask firstSubTaskForSecondEpic = new SubTask("Пойти в магазин", "Сесть на автобус, " +
-                "доехать до магазина", Status.NEW, 6);
+                "доехать до магазина", Status.NEW, 6, LocalDateTime.now().plusDays(1), Duration.ofDays(1));
 
         taskManager.createTask(firstTask);
         taskManager.createTask(secondTask);
