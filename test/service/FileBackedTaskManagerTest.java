@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,6 +48,12 @@ class FileBackedTaskManagerTest {
         List<Epic> listLoadEpic = taskManager.getAllEpics();
         List<SubTask> listLoadSubtask = taskManager.getAllSubTasks();
         List<Task> listLoadHistory = taskManager.getHistory();
+        List<Task> tempPrioritiList = new ArrayList<>();
+        tempPrioritiList.add(task);
+        tempPrioritiList.add(subtaskFirst);
+        tempPrioritiList.add(subtaskSecond);
+
+        assertEquals(tempPrioritiList, taskManager.getPrioritizedTasks(), "Листы приоритетных задач не совпадают");
 
         assertEquals(subtaskFirst.getName(), listLoadSubtask.get(0).getName(), "Поля name у задачи не совпадают.");
         assertEquals(subtaskFirst.getId(), listLoadSubtask.get(0).getId(), "Поля id у задачи не совпадают.");
@@ -54,6 +61,8 @@ class FileBackedTaskManagerTest {
         assertEquals(subtaskFirst.getStatus(), listLoadSubtask.get(0).getStatus(), "Поля staus у задачи не совпадают.");
         assertEquals(subtaskFirst.getDescription(), listLoadSubtask.get(0).getDescription(), "Поля description у задачи не совпадают.");
         assertEquals(subtaskFirst.getTaskType(), listLoadSubtask.get(0).getTaskType(), "Поля taskType у задачи не совпадают.");
+        assertEquals(subtaskFirst.getStartTime(), listLoadSubtask.get(0).getStartTime(), "Поля startTime у задачи не совпадают.");
+        assertEquals(subtaskFirst.getDuration(), listLoadSubtask.get(0).getDuration(), "Поля duration у задачи не совпадают.");
 
         assertEquals(task.getName(), listLoadTask.get(0).getName(), "Поля name у задачи не совпадают.");
         assertEquals(task.getId(), listLoadTask.get(0).getId(), "Поля id у задачи не совпадают.");
@@ -61,6 +70,8 @@ class FileBackedTaskManagerTest {
         assertEquals(task.getStatus(), listLoadTask.get(0).getStatus(), "Поля staus у задачи не совпадают.");
         assertEquals(task.getDescription(), listLoadTask.get(0).getDescription(), "Поля description у задачи не совпадают.");
         assertEquals(task.getTaskType(), listLoadTask.get(0).getTaskType(), "Поля taskType у задачи не совпадают.");
+        assertEquals(task.getStartTime(), listLoadTask.get(0).getStartTime(), "Поля startTime у задачи не совпадают.");
+        assertEquals(task.getDuration(), listLoadTask.get(0).getDuration(), "Поля duration у задачи не совпадают.");
 
         assertEquals(epic.getName(), listLoadEpic.get(0).getName(), "Поля name у задачи не совпадают.");
         assertEquals(epic.getId(), listLoadEpic.get(0).getId(), "Поля id у задачи не совпадают.");

@@ -184,10 +184,6 @@ class InMemoryTaskManagerTest {
         tempList.add(task2);
         tempList.add(task3);
 
-        List<Task> listFromTreeMap = taskManager.getPrioritizedTasks()
-                .values()
-                .stream()
-                .toList();
-        assertEquals(tempList, listFromTreeMap, "Не совпадает последовательность по времени");
+        assertEquals(tempList, taskManager.getPrioritizedTasks(), "Не совпадает последовательность по времени");
     }
 }

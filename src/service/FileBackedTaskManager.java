@@ -54,6 +54,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         maxId = tempId;
                     }
                     fileBackedTaskManager.tasks.put(tempId, tempTask);
+                    fileBackedTaskManager.prioritizedTasks.put(tempTask.getStartTime(), tempTask);
                 } else if ((TaskType.EPIC).toString().equals(oneLine[1])) {
                     Epic tempEpic = new Epic(oneLine[2], oneLine[4], Status.valueOf(oneLine[3]));
                     tempId = Integer.parseInt(oneLine[0]);
@@ -76,6 +77,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         maxId = tempId;
                     }
                     fileBackedTaskManager.subTasks.put(tempId, tempSubTask);
+                    fileBackedTaskManager.prioritizedTasks.put(tempSubTask.getStartTime(), tempSubTask);
                 }
             }
 
