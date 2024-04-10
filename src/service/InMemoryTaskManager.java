@@ -237,6 +237,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (tempTask != null) {
             if (!timeCrossing(task)) {
                 prioritizedTasks.remove(tempTask.getStartTime());
+                prioritizedTasks.put(task.getStartTime(), task);
                 tasks.put(task.getId(), task);
             }
         } else {
@@ -254,6 +255,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (tempSubTask != null) {
             if (!timeCrossing(subTask)) {
                 prioritizedTasks.remove(tempSubTask.getStartTime());
+                prioritizedTasks.put(subTask.getStartTime(), subTask);
                 subTasks.put(subTask.getId(), subTask);
                 updateEpicStatus(subTask.getEpicId());
                 updateTimeAndDurationEpic(subTask.getEpicId());
