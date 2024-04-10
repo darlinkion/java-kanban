@@ -45,8 +45,6 @@ public interface TaskManager {
 
     void removeForIdSubTask(Integer id);
 
-    void updateTimeForAllEpics();
-
     List<SubTask> getEpicListSubTask(Integer id);
 
     List<Task> getPrioritizedTasks();
