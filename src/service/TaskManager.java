@@ -13,11 +13,11 @@ public interface TaskManager {
 
     int createEpic(Epic epic);
 
-    Task getTaskByld(int id);
+    Task getTaskByld(Integer id);
 
-    Epic getEpicByld(int id);
+    Epic getEpicByld(Integer id);
 
-    SubTask getSubTaskByld(int id);
+    SubTask getSubTaskByld(Integer id);
 
     List<Task> getHistory();
 
@@ -46,4 +46,6 @@ public interface TaskManager {
     void removeForIdSubTask(Integer id);
 
     List<SubTask> getEpicListSubTask(Integer id);
+
+    List<Task> getPrioritizedTasks();
 }

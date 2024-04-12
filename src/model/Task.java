@@ -1,22 +1,37 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Task {
     protected String name;
     protected String description;
     protected Integer id = null;
     protected Status status;
+    protected LocalDateTime startTime = null;
+    protected Duration duration = null;
 
     public Task() {
-    }
-
-    public TaskType getTaskType() {
-        return TaskType.TASK;
     }
 
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
+        startTime = LocalDateTime.now();
+        duration = Duration.ZERO;
+    }
+
+    public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+    public TaskType getTaskType() {
+        return TaskType.TASK;
     }
 
     public String getName() {
@@ -35,7 +50,7 @@ public class Task {
         this.description = description;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -43,6 +58,29 @@ public class Task {
         if (this.id == null) {
             this.id = id;
         }
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
+        return startTime.plus(duration);
     }
 
     public Status getStatus() {
@@ -83,6 +121,8 @@ public class Task {
                 "," + task.getStatus() +
                 "," + task.getDescription() +
                 "," + task.getEpicId() +
+                "," + task.getDuration() +
+                "," + task.getStartTime() +
                 "\n";
     }
 
