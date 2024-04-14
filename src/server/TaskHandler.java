@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class TaskHandler implements HttpHandler {
 
@@ -166,7 +167,12 @@ public class TaskHandler implements HttpHandler {
         if (arrayPath.length == 4) {
             id = Integer.parseInt(arrayPath[2]);
             try {
-                writeResponse(gson.toJson(taskManager.getEpicByld(id).getSubTaskIds()), exchange, 200);
+                List<SubTask> tempList = taskManager.getEpicListSubTask(id);
+                if (tempList != null) {
+                    writeResponse(gson.toJson(tempList), exchange, 200);
+                } else {
+                    writeResponse("Не найден эпик", exchange, 404);
+                }
             } catch (NotFoundException exception) {
                 writeResponse("Не найден эпик по id:" + id, exchange, 404);
             }
@@ -186,17 +192,20 @@ public class TaskHandler implements HttpHandler {
         InputStream inputStream = exchange.getRequestBody();
         try {
             String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-            Task gsonTask = gson.fromJson(body, Task.class);
-
-            if (gsonTask.getId() == null) {
-                Integer tempId = taskManager.createTask(gsonTask);
-                if (tempId == -1 || tempId == -3) {
-                    writeResponse("Ошибка создания задачи Task", exchange, 406);
-                }
-                writeResponse("Создана задача с id =" + tempId, exchange, 201);
+            if (body.isEmpty()) {
+                writeResponse("Пустое тело запроса", exchange, 400);
             } else {
-                taskManager.updateTask(gsonTask);
-                writeResponse("Изменена задача", exchange, 200);
+                Task gsonTask = gson.fromJson(body, Task.class);
+                if (gsonTask.getId() == null) {
+                    Integer tempId = taskManager.createTask(gsonTask);
+                    if (tempId < 0) {
+                        writeResponse("Ошибка создания задачи Task", exchange, 406);
+                    }
+                    writeResponse("Создана задача с id =" + tempId, exchange, 201);
+                } else {
+                    taskManager.updateTask(gsonTask);
+                    writeResponse("Изменена задача", exchange, 200);
+                }
             }
         } catch (Exception exeption) {
             writeResponse("Передана неверная задача", exchange, 406);
@@ -207,18 +216,20 @@ public class TaskHandler implements HttpHandler {
         InputStream inputStream = exchange.getRequestBody();
         try {
             String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-            Epic epic = gson.fromJson(body, Epic.class);
-            System.out.println(gson.fromJson(body, Epic.class));
-            System.out.println(epic);
-            if (epic.getId() == null) {
-                Integer tempId = taskManager.createEpic(epic);
-                if (tempId == -1) {
-                    writeResponse("Ошибка создания задачи Epic", exchange, 406);
-                }
-                writeResponse("Создана задача с id =" + tempId, exchange, 201);
+            if (body.isEmpty()) {
+                writeResponse("Пустое тело запроса", exchange, 400);
             } else {
-                taskManager.updateEpic(epic);
-                writeResponse("Epic обновлен", exchange, 200);
+                Epic epic = gson.fromJson(body, Epic.class);
+                if (epic.getId() == null) {
+                    Integer tempId = taskManager.createEpic(epic);
+                    if (tempId < 0) {
+                        writeResponse("Ошибка создания задачи Epic", exchange, 406);
+                    }
+                    writeResponse("Создана задача с id =" + tempId, exchange, 201);
+                } else {
+                    taskManager.updateEpic(epic);
+                    writeResponse("Epic обновлен", exchange, 200);
+                }
             }
         } catch (Exception exeption) {
             writeResponse("Передана неверная задача", exchange, 406);
@@ -230,17 +241,21 @@ public class TaskHandler implements HttpHandler {
         InputStream inputStream = exchange.getRequestBody();
         try {
             String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-            SubTask subTask = gson.fromJson(body, SubTask.class);
-
-            if (subTask.getId() == null) {
-                Integer tempId = taskManager.createSubTask(subTask);
-                if (tempId == -1 || tempId == -2 || tempId == -3) {
-                    writeResponse("Ошибка создания подзадачи SubTask", exchange, 406);
-                }
-                writeResponse("Создана задача с id =" + tempId, exchange, 201);
+            if (body.isEmpty()) {
+                writeResponse("Пустое тело запроса", exchange, 400);
             } else {
-                taskManager.updateSubTask(subTask);
-                writeResponse("Изменена задача", exchange, 200);
+                SubTask subTask = gson.fromJson(body, SubTask.class);
+
+                if (subTask.getId() == null) {
+                    Integer tempId = taskManager.createSubTask(subTask);
+                    if (tempId < 0) {
+                        writeResponse("Ошибка создания подзадачи SubTask", exchange, 406);
+                    }
+                    writeResponse("Создана задача с id =" + tempId, exchange, 201);
+                } else {
+                    taskManager.updateSubTask(subTask);
+                    writeResponse("Изменена задача", exchange, 200);
+                }
             }
         } catch (Exception exeption) {
             writeResponse("Передана неверная задача", exchange, 406);

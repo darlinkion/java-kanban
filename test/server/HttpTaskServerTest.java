@@ -590,9 +590,9 @@ class HttpTaskServerTest {
         taskManager.createSubTask(firstSubTaskForFristEpic);
         taskManager.createSubTask(secondSubTaskForFristEpic);
         taskManager.createSubTask(firstSubTaskForSecondEpic);
-        List<Integer> tempList = new ArrayList<>();
-        tempList.add(firstSubTaskForFristEpic.getId());
-        tempList.add(secondSubTaskForFristEpic.getId());
+        List<SubTask> tempList = new ArrayList<>();
+        tempList.add(firstSubTaskForFristEpic);
+        tempList.add(secondSubTaskForFristEpic);
 
         HttpRequest request = HttpRequest
                 .newBuilder()
@@ -604,7 +604,7 @@ class HttpTaskServerTest {
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             assertEquals(200, response.statusCode());
-            List<Integer> subTaskListId = gson.fromJson(response.body(), new IntegerListTypeToken().getType());
+            List<SubTask> subTaskListId = gson.fromJson(response.body(), new TasksListTypeToken().getType());
             assertNotNull(subTaskListId);
             assertEquals(tempList.size(), subTaskListId.size());
         } catch (Exception e) {

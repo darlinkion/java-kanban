@@ -27,13 +27,10 @@ public class HttpTaskServer {
 
         httpServer.createContext("/tasks", taskHandler);
         httpServer.createContext("/tasks/id", taskHandler);
-        httpServer.createContext("/tasks/Body:{task}", taskHandler);
         httpServer.createContext("/subtasks", taskHandler);
         httpServer.createContext("/subtasks/id", taskHandler);
-        httpServer.createContext("/subtasks/Body:{subtasks}", taskHandler);
         httpServer.createContext("/epics", taskHandler);
         httpServer.createContext("/epics/id", taskHandler);
-        httpServer.createContext("/epics/Body:{subtasks}", taskHandler);
         httpServer.createContext("/epics/id/subtasks", taskHandler);
         httpServer.createContext("/history", taskHandler);
         httpServer.createContext("/prioritized", taskHandler);
