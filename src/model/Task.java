@@ -22,6 +22,15 @@ public class Task {
         duration = Duration.ZERO;
     }
 
+    public Task(Integer id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
     public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.name = name;
         this.description = description;
@@ -107,9 +116,11 @@ public class Task {
     public String toString() {
         return "Task{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ",name='" + name + '\'' +
                 ",description='" + description + '\'' +
                 ",status='" + status + '\'' +
+                ",startTime='" + startTime + '\'' +
+                ",duration='" + duration + '\'' +
                 "}\n";
     }
 
