@@ -871,12 +871,14 @@ class HttpTaskServerTest {
         url = URI.create(path);
         Epic firstEpic = new Epic("Пройти 4 спринт", "Разбить прохождение српинта на маленькие задачи", Status.NEW);
         taskManager.createEpic(firstEpic);
-        SubTask firstSubTaskForFristEpic = new SubTask("Изучить теорию", "Пройти уроки спринта", Status.NEW, firstEpic.getId(), LocalDateTime.now().plusMinutes(40), Duration.ofMinutes(1000));
-        SubTask secondSubTaskForFristEpic = new SubTask("Пройти тренажер", "...", Status.NEW, firstEpic.getId(), LocalDateTime.now().plusMinutes(40), Duration.ofMinutes(10));
+        SubTask firstSubTaskForFristEpic = new SubTask("Изучить теорию", "Пройти уроки спринта", Status.NEW, firstEpic.getId(),
+                LocalDateTime.of(2023, 01, 3, 10, 0, 0), Duration.ofMinutes(100000));
+        taskManager.createSubTask(firstSubTaskForFristEpic);
 
-        taskManager.createSubTask(secondSubTaskForFristEpic);
+        SubTask secondSubTaskForFristEpic = new SubTask("Пройти тренажер", "сдать 9 спринт", Status.NEW, firstEpic.getId(),
+                LocalDateTime.of(2023, 01, 3, 10, 55, 50), Duration.ofMinutes(160));
 
-        String taskJson = gson.toJson(firstSubTaskForFristEpic);
+        String taskJson = gson.toJson(secondSubTaskForFristEpic);
         HttpRequest request = HttpRequest
                 .newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(taskJson))
